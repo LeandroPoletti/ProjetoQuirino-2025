@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_quirino/textInput.dart';
 
 void main() {
   runApp(const MyApp());
@@ -45,18 +46,17 @@ class ListaTodo extends StatelessWidget {
         onPressed: () {
           showModalBottomSheet(
               context: context,
+              isScrollControlled: true,
               builder: (b) {
-                return SizedBox.expand(
-                  child: Container(
+                return  Container(
+                  height: 500,
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(12)),
-                    padding: EdgeInsets.only(top: 50),
+                    padding: EdgeInsets.only(top: 50, left: 30, right: 30),
                     child: Column(
-
-                      children: [Text("data")],
+                      children: [textInput(updateFunction: (s) {},textLabel: "algo")],
                     ),
-                  ),
-                );
+                  );
               });
         },
         backgroundColor: Colors.blue,
