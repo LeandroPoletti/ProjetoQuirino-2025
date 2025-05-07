@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_quirino/entidades/itemTodo.dart';
 import 'package:projeto_quirino/textInput.dart';
 
 void main() {
@@ -36,8 +37,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ListaTodo extends StatelessWidget {
+class ListaTodo extends StatefulWidget {
   const ListaTodo({super.key});
+
+  @override
+  State<ListaTodo> createState() => _ListaTodoState();
+}
+
+class _ListaTodoState extends State<ListaTodo> {
+  List<Itemtodo> itens = [];
 
   @override
   Widget build(BuildContext context) {
@@ -48,15 +56,13 @@ class ListaTodo extends StatelessWidget {
               context: context,
               isScrollControlled: true,
               builder: (b) {
-                return  Container(
+                return Container(
                   height: 500,
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(12)),
-                    padding: EdgeInsets.only(top: 50, left: 30, right: 30),
-                    child: Column(
-                      children: [textInput(updateFunction: (s) {},textLabel: "algo")],
-                    ),
-                  );
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(12)),
+                  padding: EdgeInsets.only(top: 50, left: 30, right: 30),
+                  child: AdicionarItem(),
+                );
               });
         },
         backgroundColor: Colors.blue,
@@ -74,3 +80,43 @@ class ListaTodo extends StatelessWidget {
     );
   }
 }
+
+class AdicionarItem extends StatefulWidget {
+  const AdicionarItem({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _AdicionarItem();
+}
+
+class _AdicionarItem extends State<AdicionarItem> {
+  String titulo = "";
+  String descricao = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      textInput(
+          updateFunction: (s) {
+            setState(() {
+              titulo = s;
+            });
+          },
+          textLabel: "Titulo"),
+      textInput(
+          updateFunction: (s) {
+            setState(() {
+              descricao = s;
+            });
+          },
+          textLabel: "Descrição"),
+      Container(
+          padding: EdgeInsets.only(top: 50),
+          child: TextButton(
+            onPressed: () {},
+            style: ButtonStyle(alignment: Alignment.center),
+            child: Text("Adicionar"),
+          ))
+    ]);
+  }
+}
+
