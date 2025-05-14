@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_quirino/textInput.dart';
+import 'package:projeto_quirino/dao.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // Comentar caso esteja usando o emulador Android/iOS
 
 void main() {
+  // Inicialização obrigatória do banco de dados para apps desktop (Windows/macOS/Linux).
+  // Não é necessária em Android/iOS.
+  // Inicializa o banco com sqflite_common_ffi
+  // Comentar caso esteja usando o emulador Android/iOS
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
+
   runApp(const MyApp());
 }
 
@@ -141,6 +150,22 @@ class _AdicionarItem extends State<AdicionarItem> {
               print("Título: $titulo");
               print("Descrição: $descricao");
               print("Data: ${dataSelecionada!.day}/${dataSelecionada!.month}/${dataSelecionada!.year}");
+
+              // prioridade CHARACTER(1),
+              // data_vencimento DATE,
+              // data_criacao DATE,
+              // status CHARACTER(1),
+              // descricao TEXT,
+              // titulo VARCHAR(255)
+              
+              DataAccessObject.createTarefa(
+                'P',
+                dataSelecionada!,
+                dataSelecionada!,
+                "F",
+                descricao,
+                titulo
+              );
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
