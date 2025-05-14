@@ -1,4 +1,3 @@
-import "package:flutter/material.dart";
 import "package:sqflite/sqflite.dart" as sql;
 
 class DataAccessObject {
@@ -37,8 +36,8 @@ class DataAccessObject {
     final db = await DataAccessObject.db();
     final dados = {
       "prioridade": prioridade,
-      "data_vencimento": dataVencimento,
-      "data_criacao": dataCriacao,
+      "data_vencimento": dataVencimento.toIso8601String(),
+      "data_criacao": dataCriacao.toIso8601String(),
       "status": status,
       "descricao": descricao,
       "titulo": titulo,
