@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_quirino/textInput.dart';
+import 'package:projeto_quirino/text_input.dart';
+import 'package:projeto_quirino/dao.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // Comentar caso esteja usando o emulador Android/iOS
 
 void main() {
+  // Inicialização obrigatória do banco de dados para apps desktop (Windows/macOS/Linux).
+  // Não é necessária em Android/iOS.
+  // Inicializa o banco com sqflite_common_ffi
+  // Comentar caso esteja usando o emulador Android/iOS
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
+
   runApp(const MyApp());
 }
 
@@ -21,8 +30,34 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ListaTodo extends StatelessWidget {
+class ListaTodo extends StatefulWidget {
   const ListaTodo({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _ListaTodo();
+}
+
+class _ListaTodo extends State<ListaTodo> {
+  List<Map<String, dynamic>> _listaTarefas = [];
+
+  void _atualizarLista() async {
+    final dados = await DataAccessObject.getTarefas();
+    setState(() {
+      _listaTarefas = dados;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _atualizarLista();
+  }
+
+  // Métodos CRUD
+  Future<void> _excluirTarefa(int id) async {
+    await DataAccessObject.deleteTarefa(id);
+    _atualizarLista();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,12 +87,27 @@ class ListaTodo extends StatelessWidget {
         ),
       ),
       appBar: AppBar(
-        title: const Text("Projeto Quirino todo"),
+        title: const Text("To Do"),
         backgroundColor: Colors.blue,
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
       ),
-      body: const Center(
-        child: Text("Nenhuma tarefa adicionada ainda."),
+      body: ListView.builder(
+        itemCount: _listaTarefas.length,
+        itemBuilder:
+            (context, index) => ListTile(
+              leading: Icon(
+                Icons.task
+              ),
+              title: Text(_listaTarefas[index]["titulo"]),
+              subtitle: Text("${_listaTarefas[index]["descricao"]}"),
+              trailing: IconButton(
+                onPressed: () {
+                  _excluirTarefa(_listaTarefas[index]["id"]);
+                },
+                icon: Icon(Icons.delete),
+              ),
+              onTap: () {},
+            ),
       ),
     );
   }
@@ -79,7 +129,7 @@ class _AdicionarItem extends State<AdicionarItem> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        textInput(
+        TextInput(
           updateFunction: (s) {
             setState(() {
               titulo = s;
@@ -87,7 +137,7 @@ class _AdicionarItem extends State<AdicionarItem> {
           },
           textLabel: "Titulo",
         ),
-        textInput(
+        TextInput(
           updateFunction: (s) {
             setState(() {
               descricao = s;
@@ -138,9 +188,20 @@ class _AdicionarItem extends State<AdicionarItem> {
                 return;
               }
 
-              print("Título: $titulo");
-              print("Descrição: $descricao");
-              print("Data: ${dataSelecionada!.day}/${dataSelecionada!.month}/${dataSelecionada!.year}");
+              // print("Título: $titulo");
+              // print("Descrição: $descricao");
+              // print("Data: ${dataSelecionada!.day}/${dataSelecionada!.month}/${dataSelecionada!.year}");
+              
+              // Alguns valores estão fixos.
+              // TODO: substituir valores fixos pelas variáveis
+              DataAccessObject.createTarefa(
+                'P',
+                dataSelecionada!,
+                dataSelecionada!,
+                "F",
+                descricao,
+                titulo
+              );
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
